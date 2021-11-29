@@ -27,8 +27,8 @@ launch the server
 
 ## Authors
 
-Benjamin Matuszewski <benjamin.matuszewski@ircam.fr>
-Victor Paredes <victor.paredes@ircam.fr>
+- Benjamin Matuszewski <benjamin.matuszewski@ircam.fr>
+- Victor Paredes <victor.paredes@ircam.fr>
 
 ## License
 
