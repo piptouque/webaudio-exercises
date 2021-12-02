@@ -2,14 +2,21 @@
 
 > Exercises for the ATIAM WebAudio course
 
+## Content
+
+- `exercises` contains the boilerplate code for the exercises
+- `correction` contains the complete code of the exercises
+- `project` contains the boilerplate code for the final project
+
 ## Install
 
 ```
+cd path/to/exercises
 npm install 
 npm run dev
 ```
 
-Your application will be accessible at `http://localhost:5000/`
+The application will be accessible at `http://localhost:5000/`
 
 ## Available commands
 
