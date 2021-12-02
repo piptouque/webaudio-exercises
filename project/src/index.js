@@ -183,7 +183,6 @@ class ConcatEngine {
     this.audioContext = audioContext;
     this.period = 0.05; // period of the grains
     this.duration = 0.2; // duration of the grains
-    this._position = 0; // position in the buffer
 
     this.output = audioContext.createGain();
   }
@@ -262,9 +261,6 @@ class ConcatEngine {
   const synth = new ConcatEngine(audioContext);
   synth.buffer = buffer;
   synth.connect(audioContext.destination);
-
-  synth.position = 1;
-  console.log(buffer.duration, synth.position);
 
   scheduler.add(synth); // start granular engine
   // ![students] ----------------------------------------
