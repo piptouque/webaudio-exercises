@@ -14,10 +14,9 @@
   },
   "dependencies": {
     "@ircam/resume-audio-context": "^1.0.2",
-    "@ircam/simple-components": "^1.2.4",
+    "@ircam/simple-components": "^1.2.5",
     "core-js": "^3.8.3",
-    "install": "^0.13.0",
-    "lit-html": "^2.0.2",
+    "lit-html": "^1.4.1",
     "npm": "^8.1.4",
     "regenerator-runtime": "^0.13.7",
     "waves-loaders": "^0.1.5",

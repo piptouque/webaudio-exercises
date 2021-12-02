@@ -3,11 +3,6 @@ const path = require('path');
 module.exports = {
   entry: {
     'index': './src/index.js',
-    'playing-audio-buffers': './src/playing-audio-buffers.js',
-    'feedback-delay': './src/feedback-delay.js',
-    'amplitude-modulation': './src/amplitude-modulation.js',
-    'scheduling': './src/scheduling.js',
-    'granular-synthesis': './src/granular-synthesis.js',
   },
   mode: 'development',
   devtool: 'eval-cheap-module-source-map',

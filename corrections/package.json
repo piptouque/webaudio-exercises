@@ -16,7 +16,6 @@
     "@ircam/resume-audio-context": "^1.0.2",
     "@ircam/simple-components": "^1.2.4",
     "core-js": "^3.8.3",
-    "install": "^0.13.0",
     "lit-html": "^2.0.2",
     "npm": "^8.1.4",
     "regenerator-runtime": "^0.13.7",
