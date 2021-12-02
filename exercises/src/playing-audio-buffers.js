@@ -24,31 +24,11 @@ const model = {
 };
 
 function playSound(filename) {
-  // // @students step 1 -------------------
-  // // -> simply play the buffers
-  // const buffer = data.buffers[filename];
-
-  // const src = audioContext.createBufferSource();
-  // src.connect(audioContext.destination);
-  // src.buffer = buffer;
-
-  // src.start();
-  // // -----------------------------
-
-  // @students step 2 -------------------
-  // -> adding volume
-  const buffer = model.buffers[filename];
-  const volume = model.volume;
-  const env = audioContext.createGain();
-  env.connect(audioContext.destination);
-  env.gain.value = volume;
-
-  const src = audioContext.createBufferSource();
-  src.connect(env);
-  src.buffer = buffer;
-
-  src.start();
-  // -----------------------------
+  // -> play the buffer
+  // -> add volume
+  // <-----------------------------
+  // code
+  // ---------------------------->
 
   // ## Going further: separate volume for each buffer
   //
@@ -66,31 +46,25 @@ function playSound(filename) {
   // 3. update `playSound` function
 }
 
+
 (async function main() {
   // resume audio context
   await resumeAudioContext(audioContext);
 
-  // @students -------------------
   // 1. load sound files
-  const loader = new AudioBufferLoader();
-  const buffers = await loader.load(soundfiles);
+  // <-----------------------------
+  // code
+  // ---------------------------->
 
-  // @present - anatomy of an AudioBuffer (important for the project)
-  // const buffer = buffers[0]; // pick first buffer
-  // console.log(buffer.sampleRate);
-  // console.log(buffer.getChannelData(0)); // check underlying data
-
-  // 2. use the result and the `soundfile` Array to populate data.buffers
-  // data.buffers -> Object{ [filename]: AudioBuffer }
-  soundfiles.forEach((pathname, index) => {
-    const filename = pathname.split('/')[2];
-    model.buffers[filename] = buffers[index];
-  });
-
-  // -----------------------------
+  // 2. use the result and the `soundfile` Array to populate model.buffers
+  // model.buffers -> Object{ [filename]: AudioBuffer }
+  // <-----------------------------
+  // code
+  // ---------------------------->
 
   renderGUI();
 }());
+
 
 // GUI
 function renderGUI() {

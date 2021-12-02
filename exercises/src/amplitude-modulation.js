@@ -14,75 +14,59 @@ const globals = { master: null, amSynth: null };
 
 class AMSynth {
   constructor(audioContext) {
-    this.audioContext = audioContext;
-
-    this._depthValue = 1; // this value will control both tremolo and depth nodes
-
-    this._tremolo = audioContext.createGain(); // the gain that will be modulated [0, 1]
-    this._tremolo.gain.value = 1 - this._depthValue / 2;
-
-    // scale mod oscillator to make sure `depth + tremolo` stays in the [0, 1] range
-    // `depth` should stay between [0, 0.5] -> therefore producing a sine [-0.5, 5]
-    // `tremolo` should be complementary between [1, 0.5]
-    this._depth = audioContext.createGain();
-    this._depth.gain.value = this._depthValue / 2;
-    this._depth.connect(this._tremolo.gain);
-
-    this._mod = audioContext.createOscillator();
-    this._mod.frequency.value = 2;
-    this._mod.connect(this._depth); //
-
-    this._carrier = audioContext.createOscillator();
-    this._carrier.connect(this._tremolo);
-
-    this._mod.start();
-    this._carrier.start();
-
-    // _tremolo is the output of the synth
-    this._output = this._tremolo
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   connect(output) {
-    this._carrier.connect(output);
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   // use `setTargetAtTime` automation instead of setting the `value` property
   // to exponentially ramp to the value and avoid clicks and pop.
   set carrierFrequency(value) {
-    const startTime = this.audioContext.currentTime;
-    const timeConstant = 0.001;
-    this._carrier.frequency.setTargetAtTime(value, startTime, timeConstant);
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   get carrierFrequency() {
-    return this._carrier.frequency.value;
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   set modFrequency(value) {
-    const startTime = this.audioContext.currentTime;
-    const timeConstant = 0.001;
-    this._mod.frequency.setTargetAtTime(value, startTime, timeConstant);
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   get modFrequency() {
-    return this._mod.frequency.value;
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   set depth(value) {
-    this._depthValue = value;
-    const startTime = this.audioContext.currentTime;
-    const timeConstant = 0.001;
-
-    this._tremolo.gain.setTargetAtTime(1 - this._depthValue / 2, startTime, timeConstant);
-    this._depth.gain.setTargetAtTime(this._depthValue / 2, startTime, timeConstant)
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   get depth() {
-    return this._depthValue;
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 
   connect(output) {
-    this._output.connect(output);
+    // <-----------------------------
+    // code
+    // ---------------------------->
   }
 }
 
@@ -101,13 +85,11 @@ class AMSynth {
   // resume audio context
   await resumeAudioContext(audioContext);
 
-  // [students] ----------------------------
   // implement master volume
   const master = audioContext.createGain();
   master.connect(audioContext.destination);
 
-  // ![students] ----------------------------
-
+  // instantiate the synth
   const amSynth = new AMSynth(audioContext);
   amSynth.connect(master);
 
