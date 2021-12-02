@@ -68,40 +68,9 @@ function tick() {
 }
 
 const metro = {
-  guiElement: null, // GUI elements to display the event
-  period: 1, // in sec
-  advanceTime(currentTime, dt) {
-    // [students] ----------------------------
-
-    // lazily look for the gui element
-    if (!this.guiElement) {
-      this.guiElement = document.querySelector('.metro');
-    }
-
-    if (this.guiElement) {
-      // delay the activation of the GUI element by dt
-      setTimeout(() => {
-        this.guiElement.active = true;
-      }, dt * 1000);
-    }
-
-    // play some metro sound
-    const env = audioContext.createGain();
-    env.connect(audioContext.destination);
-    // create a really simple enveloppe (A[DS]R)
-    env.gain.setValueAtTime(0, currentTime); // create a point in automation timeline
-    env.gain.linearRampToValueAtTime(1, currentTime + 0.001); // linear attack 10ms
-    env.gain.exponentialRampToValueAtTime(0.0001, currentTime + 0.05); // exp release 1sec
-
-    const osc = audioContext.createOscillator();
-    osc.connect(env);
-    osc.frequency.value = 600;
-
-    osc.start(currentTime);
-    osc.stop(currentTime + 0.05);
-
-    return currentTime + this.period;
-  }
+    // <-----------------------------
+    // code
+    // ---------------------------->
 };
 
 // ## Going further
