@@ -43,21 +43,7 @@ const HOP_SIZE = 512;
 // @param {Number} hopSize - Size of hop between two consecutive blocks
 // @return {Array}
 function getTimes(channelData, sampleRate, blockSize, hopSize) {
-  const bufferLength = channelData.length;
-  const result = [];
 
-  for (let i = 0; i < bufferLength; i += hopSize) {
-    const startSample = i;
-    const endSample = i + blockSize;
-
-    // ignore last block if < blockSize
-    if (endSample <= bufferLength) {
-      const time = startSample / sampleRate;
-      result.push(time);
-    }
-  }
-
-  return result;
 }
 
 // returns an Array of zero-crossing values from the given audio signal
@@ -68,28 +54,7 @@ function getTimes(channelData, sampleRate, blockSize, hopSize) {
 // @param {Number} hopSize - Size of hop between two consecutive blocks
 // @return {Array}
 function rms(channelData, sampleRate, blockSize, hopSize) {
-  const bufferLength = channelData.length;
-  const result = [];
 
-  for (let i = 0; i < bufferLength; i += hopSize) {
-    const startSample = i;
-    const endSample = i + blockSize;
-
-    // ignore last block if < blockSize
-    if (endSample <= bufferLength) {
-      let sumOfSquared = 0; // sum of samples in the block
-
-      for (let j = startSample; j < endSample; j++) {
-        sumOfSquared += (channelData[j] * channelData[j]);
-      }
-
-      let mean = sumOfSquared / blockSize;
-      let rms = Math.sqrt(mean);
-      result.push(rms);
-    }
-  }
-
-  return result;
 }
 
 // returns an estimation of the pitch / noisiness (in Hz) using zero-crossing
@@ -101,80 +66,18 @@ function rms(channelData, sampleRate, blockSize, hopSize) {
 // @param {Number} hopSize - Size of hop between two consecutive blocks
 // @return {Array}
 function zeroCrossing(channelData, sampleRate, blockSize, hopSize) {
-  const bufferLength = channelData.length;
-  const result = [];
 
-  for (let i = 0; i < bufferLength; i += hopSize) {
-    const startSample = i;
-    const endSample = i + blockSize;
-    const blockDuration = blockSize / sampleRate;
-
-    // ignore last block if < blockSize
-    if (endSample <= bufferLength) {
-      let count = 0; // sum of samples in the block
-
-      // `endSample - 1` because we compare 2 consecutive samples
-      for (let j = startSample; j < endSample - 1; j++) {
-        const current = channelData[j];
-        const next = channelData[j + 1];
-
-        // these two samples are of different signs
-        if (current * next < 0) {
-          count += 1;
-        }
-      }
-
-      const zc = count / blockDuration; // is this correct?
-      result.push(zc);
-    }
-  }
-
-  return result;
 }
 
 // normalize given `data` array according to its min and max
 // @param {Array} data - Array of the data to normalize
 // @return {Array}
 function normalize(data) {
-  let min = +Infinity;
-  let max = -Infinity;
-  let result = [];
-  // find min and max
-  for (let i = 0; i < data.length; i++) {
-    if (data[i] < min) {
-      min = data[i];
-    }
 
-    if (data[i] > max)  {
-      max = data[i];
-    }
-  }
-
-  for (let i = 0; i < data.length; i++) {
-    result[i] = (data[i] - min) / (max - min);
-  }
-
-  return result;
 }
 
 function findStartTimeFromGuiPosition(guiPosition, data) {
-  const { x, y } = guiPosition;
-  const { times, normX, normY } = data;
-  let minDistance = +Infinity;
-  let closestIndex = null; // index of the chunk that is closer to our gui point
 
-  for (let i = 0; i < times.length; i++) {
-    const distX = normX[i] - x;
-    const distY = normY[i] - y;
-    const distance = Math.sqrt(distX * distX + distY * distY);
-
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestIndex = i;
-    }
-  }
-
-  return times[closestIndex];
 }
 
 // [students] ----------------------------------------
@@ -200,36 +103,7 @@ class ConcatEngine {
   }
 
   advanceTime(currentTime, audioTime, dt) {
-    // this should retrieve a position in the buffer (in sec) according to
-    // the position in the interface and to the analysis
-    const guiPosition = globals.guiPosition;
-    // don't play sound of interaction is released
-    if (guiPosition.x === null && guiPosition.y == null) {
-      return currentTime + this.period;
-    }
 
-    const positionInBuffer = findStartTimeFromGuiPosition(guiPosition, data);
-    // add some jitter to avoid audible artifact due to period
-    const grainTime = audioTime + Math.random() * 0.005;
-
-    // fire and forget the grain
-    const env = this.audioContext.createGain();
-    env.gain.value = 0;
-    env.connect(this.output);
-
-    const src = this.audioContext.createBufferSource();
-    src.buffer = this.buffer;
-    src.connect(env);
-
-    // triangle ramp
-    env.gain.setValueAtTime(0., grainTime);
-    env.gain.linearRampToValueAtTime(1., grainTime + this.duration / 2);
-    env.gain.linearRampToValueAtTime(0., grainTime + this.duration);
-
-    src.start(grainTime, positionInBuffer);
-    src.stop(grainTime + this.duration);
-
-    return currentTime + this.period;
   }
 }
 
@@ -238,32 +112,18 @@ class ConcatEngine {
   await resumeAudioContext(audioContext);
 
   // [students] ----------------------------------------
-  // load audio file
-  const loader = new AudioBufferLoader();
-  const buffer = await loader.load(audioFile);
+  // 1. load audio file
 
-  // perform analysis and store results in `data`
-  const channelData = buffer.getChannelData(0); // assume the buffer is mono
-  const sampleRate = buffer.sampleRate;
-  data.times = getTimes(channelData, sampleRate, BLOCK_SIZE, HOP_SIZE);
-  data.rms = rms(channelData, sampleRate, BLOCK_SIZE, HOP_SIZE);
-  data.zeroCrossing = zeroCrossing(channelData, sampleRate, BLOCK_SIZE, HOP_SIZE);
+  // 2. perform analysis and store results in `data`
 
-  // compute normalized analysis for GUI and search
-  data.normX = normalize(data.zeroCrossing);
-  data.normY = normalize(data.rms);
+  // 3. compute normalized analysis for GUI and search
 
-  // create scheduler
-  const getTimeFunction = () => audioContext.currentTime;
-  const scheduler = new Scheduler(getTimeFunction);
+  // 4. create scheduler
 
-  // create granular engine
-  const synth = new ConcatEngine(audioContext);
-  synth.buffer = buffer;
-  synth.connect(audioContext.destination);
+  // 5. create concat engine
 
-  scheduler.add(synth); // start granular engine
-  // ![students] ----------------------------------------
+  // 6. add engine to scheduler
+
 
   globals.buffer = buffer;
   globals.scheduler = scheduler;
