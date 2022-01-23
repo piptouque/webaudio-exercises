@@ -16,6 +16,9 @@ const soundfiles = [
   './assets/clap.wav',
   './assets/hh.wav',
   './assets/rimshot.wav',
+  './assets/give_you_up.wav',
+  './assets/let_you_down.wav',
+  './assets/run_around_and_hurt_you.wav',
 ];
 
 const model = {};
@@ -43,49 +46,76 @@ function playSound(filename) {
 class FeedbackDelay {
   constructor(audioContext) {
     // <-----------------------------
-    // code
+    this.audioContext = audioContext;
+
+    this._output = this.audioContext.createGain();
+
+    this._feedback = this.audioContext.createGain();
+    this.feedback = 0.9;
+
+    this._delay = this.audioContext.createDelay();
+    this.delayTime = 0.1;
+    this._feedback.connect(this._delay);
+    this._delay.connect(this._output);
+    this._delay.connect(this._feedback);
+
+    this._preGain = this.audioContext.createGain();
+    this.preGain = 0.6;
+    this._preGain.connect(this._delay);
+
+    this.input = this.audioContext.createGain();
+    this.input.connect(this._output);
+    this.input.connect(this._preGain);
     // ---------------------------->
   }
 
-  connect(output) {
+  connect(outputNode) {
     // <-----------------------------
-    // code
+    this._output.connect(outputNode);
     // ---------------------------->
   }
 
   set preGain(value) {
     // <-----------------------------
-    // code
+    const now = this.audioContext.currentTime;
+    // this._preGain.gain.value = value;
+    this._preGain.gain.setTargetAtTime(value, now, 0.01);
     // ---------------------------->
   }
 
   get preGain() {
     // <-----------------------------
-    // code
+    return this._preGain.gain.value;
     // ---------------------------->
   }
 
   set delayTime(value) {
     // <-----------------------------
-    // code
+    const now = this.audioContext.currentTime;
+    // this._delay.delayTime.value = value;
+    this._delay.delayTime.setTargetAtTime(value, now, 0.01);
     // ---------------------------->
   }
 
   get delayTime() {
     // <-----------------------------
-    // code
+    return this._delay.delayTime.value;
     // ---------------------------->
   }
 
   set feedback(value) {
     // <-----------------------------
     // code
+    const now = this.audioContext.currentTime;
+    // this._feedback.gain.value = value;
+    this._feedback.gain.setTargetAtTime(value, now, 0.01);
     // ---------------------------->
   }
 
   get feedback() {
     // <-----------------------------
     // code
+    return this._feedback.gain.value;
     // ---------------------------->
   }
 
@@ -97,7 +127,7 @@ class FeedbackDelay {
 // - write a class that integrates properly w/ the WebAudio API
 //
 // ## Going further:
-// - instanciate and control a FeedbackDelay for each node
+// - instantiate and control a FeedbackDelay for each node
 // - create an `AudioBufferPlayer` class to play the sounds
 
 // -----------------------------------------
@@ -120,13 +150,11 @@ class FeedbackDelay {
     };
   });
 
-  // 3. instanciate FeedbackDelay instante
+  // 3. instantiate FeedbackDelay instante
   // <-----------------------------
-  // code
+  const feedbackDelay = new FeedbackDelay(audioContext);
   // ---------------------------->
-  // connect to output
-  // <-----------------------------
-  // code
+  feedbackDelay.connect(audioContext.destination);
   // ---------------------------->
   // store it into globals so that playSound can access it
   globals.feedbackDelay = feedbackDelay;

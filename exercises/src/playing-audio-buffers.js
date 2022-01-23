@@ -16,6 +16,9 @@ const soundfiles = [
   './assets/clap.wav',
   './assets/hh.wav',
   './assets/rimshot.wav',
+  './assets/give_you_up.wav',
+  './assets/let_you_down.wav',
+  './assets/run_around_and_hurt_you.wav',
 ];
 
 const model = {
@@ -27,8 +30,15 @@ function playSound(filename) {
   // -> play the buffer
   // -> add volume
   // <-----------------------------
-  // code
+  const volume = audioContext.createGain();
+  volume.gain.value = model.volume;
+  volume.connect(audioContext.destination);
   // ---------------------------->
+  const buffer = model.buffers[filename];
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioContext.destination);
+  source.start();
 
   // ## Going further: separate volume for each buffer
   //
@@ -50,16 +60,20 @@ function playSound(filename) {
 (async function main() {
   // resume audio context
   await resumeAudioContext(audioContext);
-
   // 1. load sound files
   // <-----------------------------
-  // code
+  const loader = new AudioBufferLoader();
+  const buffers = await loader.load(soundfiles);
   // ---------------------------->
 
   // 2. use the result and the `soundfile` Array to populate model.buffers
   // model.buffers -> Object{ [filename]: AudioBuffer }
   // <-----------------------------
-  // code
+  model.buffers = Object.fromEntries(buffers.map(
+    (buffer, idx) =>
+      [soundfiles[idx].replace(/^.*[\\\/]/, '').split('.')[0],
+        buffer]));
+  console.log(model.buffers);
   // ---------------------------->
 
   renderGUI();
